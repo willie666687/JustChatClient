@@ -10,16 +10,35 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class MessageDecoder extends ByteToMessageDecoder{
+	int totalLength = 0;
+	boolean readingByteAmount = true;
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out){
-		System.out.println(in.readableBytes());
-		int bytes = in.readInt();
-//		out.add(in.readBytes(bytes).toString(StandardCharsets.UTF_8));
-		String type = in.readBytes(bytes).toString(StandardCharsets.UTF_8);
-		bytes = in.readInt();
-		System.out.println("in.readInt(): " + bytes);
-//		out.add(in.readBytes(bytes).toString(StandardCharsets.UTF_8));
-		String message = in.readBytes(bytes).toString(StandardCharsets.UTF_8);
-		out.add(new ConnectionMessage(ConnectionMessageType.valueOf(type), message));
+		System.out.println("in.readableBytes(): " + in.readableBytes());
+		if(readingByteAmount && in.readableBytes() < 4){
+			return;
+		}
+		if(totalLength == 0){
+			totalLength = in.readInt();
+		}
+		if(in.readableBytes() < totalLength){
+			return;
+		}
+		readingByteAmount = false;
+		int readingBytes = in.readInt();
+		String type = readString(in, readingBytes);
+		int messageAmount = in.readInt();
+		String[] messages = new String[messageAmount];
+		for(int i = 0; i < messageAmount; i++){
+			readingBytes = in.readInt();
+			messages[i] = readString(in, readingBytes);
+		}
+		out.add(new ConnectionMessage(ConnectionMessageType.valueOf(type), messages));
+		totalLength = 0;
+	}
+	private String readString(ByteBuf in, int length){
+		byte[] bytes = new byte[length];
+		in.readBytes(bytes);
+		return new String(bytes, StandardCharsets.UTF_8);
 	}
 }

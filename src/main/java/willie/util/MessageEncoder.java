@@ -10,11 +10,25 @@ import java.util.Arrays;
 public class MessageEncoder extends MessageToByteEncoder<ConnectionMessage>{
 	@Override
 	protected void encode(ChannelHandlerContext ctx, ConnectionMessage msg, ByteBuf out){
-		out.writeInt(msg.type.toString().getBytes().length);
-		out.writeBytes(msg.type.toString().getBytes());
-		out.writeInt(msg.message.getBytes().length);
-		out.writeBytes(msg.message.getBytes());
-		System.out.println("msg.type.toString().getBytes().length: " + msg.type.toString().getBytes().length);
-		System.out.println("Encoded message: " + Arrays.toString(msg.type.toString().getBytes()) + " " + Arrays.toString(msg.message.getBytes()));
+		int totalLength = msg.totalLength + 8;
+		out.writeInt(totalLength);
+		
+		int typeLength = msg.type.toString().getBytes().length;
+		out.writeInt(typeLength);
+		
+		String type = msg.type.toString();
+		out.writeBytes(type.getBytes());
+		
+		int messageAmount = msg.messageAmount;
+		out.writeInt(messageAmount);
+		
+		String[] messages = msg.messages;
+		for(String s : messages){
+			out.writeInt(s.getBytes().length);
+			out.writeBytes(s.getBytes());
+		}
+		
+		System.out.println("totalLength: " + totalLength);
+		System.out.println("Encoded type: " + Arrays.toString(type.getBytes()));
 	}
 }

@@ -7,15 +7,17 @@ import willie.Enum.ConnectionMessageType;
 import willie.impl.ConnectionMessage;
 
 @ChannelHandler.Sharable
-public class ClientMessageHandler extends ChannelInboundHandlerAdapter{
+public class ConnectionMessageHandler extends ChannelInboundHandlerAdapter{
 	ChannelHandlerContext ctx;
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
 		if(!(msg instanceof ConnectionMessage message)){
 			return;
 		}
-		System.out.println("Received type: " +  message.type+ ", message: " + message.message);
-//		ctx.close();
+		System.out.println("Received type: " +  message.type);
+		for(String s : message.messages){
+			System.out.println("Received message: " + s);
+		}
 	}
 	
 	@Override
@@ -27,15 +29,11 @@ public class ClientMessageHandler extends ChannelInboundHandlerAdapter{
 	public void channelActive(final ChannelHandlerContext ctx) {
 		this.ctx = ctx;
 	}
-	public void sendMessage(String message){
+	public void sendMessage(String... messages){
 		try{
-			ctx.writeAndFlush(new ConnectionMessage(ConnectionMessageType.LOGIN, message));
+			ctx.writeAndFlush(new ConnectionMessage(ConnectionMessageType.LOGIN, messages));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
-//	@Override
-//	public void channelActive(final ChannelHandlerContext ctx) {
-//		ctx.writeAndFlush("TimeChannel");
-//	}
 }

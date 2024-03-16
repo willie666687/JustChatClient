@@ -8,7 +8,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import willie.handler.ClientMessageHandler;
+import willie.handler.ConnectionMessageHandler;
 import willie.util.MessageEncoder;
 import willie.util.MessageDecoder;
 
@@ -31,7 +31,7 @@ public class ConnectionThead extends Thread{
 		}
 	}
 	EventLoopGroup workerGroup = new NioEventLoopGroup();
-	ClientMessageHandler clientHandler = new ClientMessageHandler();
+	ConnectionMessageHandler clientHandler = new ConnectionMessageHandler();
 	public void connect(){
 		Bootstrap b = new Bootstrap();
 		b.group(workerGroup);
@@ -47,7 +47,7 @@ public class ConnectionThead extends Thread{
 			ChannelFuture f = b.connect(host, port).sync();
 			System.out.println("Connected to the server.");
 			System.out.println("send hello server.");
-			clientHandler.sendMessage("Hello, server!");
+			clientHandler.sendMessage("Hello, server!", "I'm a client.");
 			f.channel().closeFuture().sync();
 		}catch(Exception e){
 			System.err.println("Unable to connect to the server, retrying in 3 seconds.");

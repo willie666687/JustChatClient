@@ -4,9 +4,22 @@ import willie.Enum.ConnectionMessageType;
 
 public class ConnectionMessage{
 	public ConnectionMessageType type;
-	public String message;
-	public ConnectionMessage(ConnectionMessageType type, String message){
+	public String[] messages;
+	public int messageAmount = 0;
+	public int totalLength = 0;
+	public ConnectionMessage(ConnectionMessageType type, String... messages){
 		this.type = type;
-		this.message = message;
+		this.messages = messages;
+		messageAmount = messages.length;
+		getTotalLength();
+	}
+	private int getTotalLength(){
+		int totalLength = 0;
+		for(String s : messages){
+			totalLength += s.getBytes().length;
+		}
+		totalLength += type.toString().getBytes().length;
+		totalLength += 8;
+		return totalLength;
 	}
 }
