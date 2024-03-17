@@ -9,30 +9,30 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import willie.handler.ConnectionMessageHandler;
-import willie.util.MessageEncoder;
+import willie.util.DebugOutput;
 import willie.util.MessageDecoder;
+import willie.util.MessageEncoder;
 
 public class ConnectionThead extends Thread{
 	String host;
 	int port;
+	Boolean stopped = false;
 	public ConnectionThead(String host, int port){
 		this.host = host;
 		this.port = port;
 	}
 	@Override
 	public void run(){
-		while(true){
-			try{
-				connect();
-				sleep(3000);
-			}catch (Exception e) {
-				e.printStackTrace();
-			}
+		try{
+			connect();
+			sleep(3000);
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	EventLoopGroup workerGroup = new NioEventLoopGroup();
-	ConnectionMessageHandler clientHandler = new ConnectionMessageHandler();
-	public void connect(){
+	public ConnectionMessageHandler connectionMessageHandler = new ConnectionMessageHandler();
+	public void connect() throws InterruptedException{
 		Bootstrap b = new Bootstrap();
 		b.group(workerGroup);
 		b.channel(NioSocketChannel.class);
@@ -40,20 +40,30 @@ public class ConnectionThead extends Thread{
 		b.handler(new ChannelInitializer<SocketChannel>(){
 			@Override
 			public void initChannel(SocketChannel ch){
-				ch.pipeline().addLast(new MessageEncoder(), new MessageDecoder(), clientHandler);
+				ch.pipeline().addLast(new MessageEncoder(), new MessageDecoder(), connectionMessageHandler);
 			}
 		});
 		try{
 			ChannelFuture f = b.connect(host, port).sync();
 			System.out.println("Connected to the server.");
-			System.out.println("send hello server.");
-			clientHandler.sendMessage("Hello, server!", "I'm a client.");
-			f.channel().closeFuture().sync();
+//			f.channel().closeFuture().sync();
+			f.channel().closeFuture().addListener(future -> {
+				if(stopped){
+					return;
+				}
+				connectionMessageHandler.interruptRegisterThread();
+				DebugOutput.printError("Connection lost, retrying in 3 seconds.");
+				sleep(3000);
+				connect();
+			});
 		}catch(Exception e){
-			System.err.println("Unable to connect to the server, retrying in 3 seconds.");
+			DebugOutput.printError("Unable to connect to the server, retrying in 3 seconds.");
+			sleep(3000);
+			connect();
 		}
 	}
 	public void stopClient(){
+		stopped = true;
 		workerGroup.shutdownGracefully();
 	}
 }

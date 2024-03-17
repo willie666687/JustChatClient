@@ -28,7 +28,6 @@ public class MessageEncoder extends MessageToByteEncoder<ConnectionMessage>{
 			out.writeBytes(s.getBytes());
 		}
 		
-		System.out.println("totalLength: " + totalLength);
-		System.out.println("Encoded type: " + Arrays.toString(type.getBytes()));
+//		System.out.println("Sent: " + msg.type + " " + Arrays.toString(msg.messages));
 	}
 }
