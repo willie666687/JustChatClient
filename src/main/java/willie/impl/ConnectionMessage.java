@@ -11,7 +11,7 @@ public class ConnectionMessage{
 		this.type = type;
 		this.messages = messages;
 		messageAmount = messages.length;
-		getTotalLength();
+		totalLength = getTotalLength();
 	}
 	private int getTotalLength(){
 		int totalLength = 0;
@@ -19,7 +19,6 @@ public class ConnectionMessage{
 			totalLength += s.getBytes().length;
 		}
 		totalLength += type.toString().getBytes().length;
-		totalLength += 8;
 		return totalLength;
 	}
 }

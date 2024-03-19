@@ -51,7 +51,7 @@ public class ConnectionThead extends Thread{
 				if(stopped){
 					return;
 				}
-				connectionMessageHandler.interruptRegisterThread();
+				connectionMessageHandler.menuThread.interrupt();
 				DebugOutput.printError("Connection lost, retrying in 3 seconds.");
 				sleep(3000);
 				connect();

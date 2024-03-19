@@ -35,8 +35,8 @@ public class InputUtils{
 //					break; // Break the loop if input is received
 //				}
 //			}
-//		} finally {
-//			scanner.close();
+//		}catch(Exception e){
+//			e.printStackTrace();
 //		}
 //		return input;
 //	}

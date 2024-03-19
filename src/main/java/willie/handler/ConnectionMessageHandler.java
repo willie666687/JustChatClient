@@ -6,9 +6,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import willie.Enum.ConnectionMessageType;
 import willie.Enum.Status;
 import willie.impl.ConnectionMessage;
-import willie.thread.LoginThread;
-import willie.thread.StartMenuThread;
-import willie.thread.RegisterThread;
+import willie.thread.MenuThread;
 import willie.util.DebugOutput;
 import willie.util.KeyUtils;
 
@@ -23,10 +21,8 @@ import java.util.Base64;
 public class ConnectionMessageHandler extends ChannelInboundHandlerAdapter{
 	ChannelHandlerContext serverCTX;
 	PublicKey serverPublicKey;
-	Status status;
-	public RegisterThread registerThread;
-	public StartMenuThread startMenuThread;
-	public LoginThread loginThread;
+	public Status status;
+	public MenuThread menuThread;
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
 		if(!(msg instanceof ConnectionMessage message)){
@@ -45,7 +41,7 @@ public class ConnectionMessageHandler extends ChannelInboundHandlerAdapter{
 					DebugOutput.printError("Error while setting public key: " + e.getMessage());
 				}
 				sendEncryptedMessage(ConnectionMessageType.DEBUGENCRYPTED, "Hello, this is a test message.", "This is another test message.");
-				runStartMenuThread();
+				runMenuThread();
 			}
 			case DEBUGENCRYPTED -> {
 				DebugOutput.printArray(2, "Received encrypted message: ", message.messages);
@@ -59,24 +55,31 @@ public class ConnectionMessageHandler extends ChannelInboundHandlerAdapter{
 				String decrypted =  decryptMessages(message.messages)[0];
 				LoginMessageHandler.handleLoginMessage(decrypted, this);
 			}
+			case ADDFRIEND -> {
+				String decrypted =  decryptMessages(message.messages)[0];
+				FriendMessageHandler.handleAddFriendMessage(decrypted, this);
+			}
+			case FRIENDLIST -> {
+				String[] decrypted =  decryptMessages(message.messages);
+				FriendMessageHandler.handleFriendListMessage(decrypted, this);
+			}
+			case FRIENDREQUEST -> {
+				String[] decrypted =  decryptMessages(message.messages);
+				FriendMessageHandler.handleFriendRequestMessage(decrypted, this);
+			}
+			case LOGOUT -> {
+				status = Status.KEYEXCHANGED;
+				menuThread.responseReceived = true;
+			}
+			case ACCEPTFRIEND -> {
+				String decrypted =  decryptMessages(message.messages)[0];
+				FriendMessageHandler.handleAcceptFriendMessage(decrypted, this);
+			}
 		}
 	}
-	public void interruptRegisterThread(){
-		if(registerThread != null){
-			registerThread.interrupt();
-		}
-	}
-	public void runStartMenuThread(){
-		startMenuThread = new StartMenuThread(this);
-		startMenuThread.start();
-	}
-	public void runRegisterThread(){
-		registerThread = new RegisterThread(this);
-		registerThread.start();
-	}
-	public void runLoginThread(){
-		loginThread = new LoginThread(this);
-		loginThread.start();
+	public void runMenuThread(){
+		menuThread = new MenuThread(this);
+		menuThread.start();
 	}
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {

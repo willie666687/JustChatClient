@@ -1,7 +1,7 @@
 package willie.util;
 
 public class DebugOutput{
-	public static Boolean debug = true;
+	public static Boolean debug = false;
 	public static int debugLevel = 0;
 	public static void print(String message){
 		if(debug){
@@ -44,5 +44,23 @@ public class DebugOutput{
 			sb.append(o.toString()).append(", ");
 		}
 		return sb.toString();
+	}
+	public static void clearOutput(){
+		if(!debug){
+			System.out.print("\033[H\033[2J");
+			System.out.flush();
+		}
+		if(response != null){
+			System.out.println(response);
+			System.out.println(" ");
+			response = null;
+		}
+	}
+	static String response;
+	public static void printResponse(String message){
+		response = message;
+		if(debug){
+			System.out.println(message);
+		}
 	}
 }
