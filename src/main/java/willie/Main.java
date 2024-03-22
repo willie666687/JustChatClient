@@ -18,6 +18,9 @@ public class Main{
 		KeyUtils.generateKey();
 		connectionThead = new ConnectionThead(host, port);
 		connectionThead.start();
-		Runtime.getRuntime().addShutdownHook(new Thread(connectionThead::stopClient));
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			connectionThead.stopClient();
+			connectionThead.interrupt();
+		}));
 	}
 }

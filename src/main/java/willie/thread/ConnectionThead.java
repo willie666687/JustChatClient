@@ -64,6 +64,7 @@ public class ConnectionThead extends Thread{
 	}
 	public void stopClient(){
 		stopped = true;
+		connectionMessageHandler.menuThread.interrupt();
 		workerGroup.shutdownGracefully();
 	}
 }

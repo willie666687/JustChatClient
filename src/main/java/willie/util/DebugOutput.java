@@ -1,7 +1,7 @@
 package willie.util;
 
 public class DebugOutput{
-	public static Boolean debug = false;
+	public static Boolean debug = true;
 	public static int debugLevel = 0;
 	public static void print(String message){
 		if(debug){

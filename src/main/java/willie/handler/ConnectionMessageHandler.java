@@ -69,11 +69,25 @@ public class ConnectionMessageHandler extends ChannelInboundHandlerAdapter{
 			}
 			case LOGOUT -> {
 				status = Status.KEYEXCHANGED;
+				MenuThread.menuStatus = null;
 				menuThread.responseReceived = true;
 			}
 			case ACCEPTFRIEND -> {
 				String decrypted =  decryptMessages(message.messages)[0];
 				FriendMessageHandler.handleAcceptFriendMessage(decrypted, this);
+			}
+			case CHATWITHFRIEND -> {
+				String friend =  decryptMessages(message.messages)[0];
+				String chatMessage =  decryptMessages(message.messages)[1];
+				FriendMessageHandler.handleChatWithFriendMessage(friend, chatMessage, this);
+			}
+			case CHATWITHFRIENDDEBUG -> {
+				String decrypted =  decryptMessages(message.messages)[0];
+				FriendMessageHandler.handleChatWithFriendDebugMessage(decrypted, this);
+			}
+			case FRIENDCHATHISTORY -> {
+				String[] decrypted =  decryptMessages(message.messages);
+				FriendMessageHandler.handleFriendChatHistoryMessage(decrypted, this);
 			}
 		}
 	}
