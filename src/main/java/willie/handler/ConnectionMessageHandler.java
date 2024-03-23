@@ -104,6 +104,7 @@ public class ConnectionMessageHandler extends ChannelInboundHandlerAdapter{
 	public void channelActive(final ChannelHandlerContext ctx) {
 		this.serverCTX = ctx;
 		status = Status.CONNECTED;
+		MenuThread.menuStatus = null;
 		sendMessage(ConnectionMessageType.KEYEXCHANGE, Base64.getEncoder().encodeToString(KeyUtils.publicKey.getEncoded()));
 	}
 	public void sendMessage(ConnectionMessageType type, String... messages){

@@ -1,6 +1,7 @@
 package willie;
 
 import willie.thread.ConnectionThead;
+import willie.util.DebugOutput;
 import willie.util.KeyUtils;
 
 import java.util.Scanner;
@@ -19,6 +20,7 @@ public class Main{
 		connectionThead = new ConnectionThead(host, port);
 		connectionThead.start();
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			DebugOutput.print("Shutting down...");
 			connectionThead.stopClient();
 			connectionThead.interrupt();
 		}));
