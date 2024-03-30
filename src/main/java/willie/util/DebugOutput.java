@@ -1,7 +1,7 @@
 package willie.util;
 
 public class DebugOutput{
-	public static Boolean debug = true;
+	public static Boolean debug = false;
 	public static int debugLevel = 0;
 	public static void print(String message){
 		if(debug){
@@ -34,9 +34,9 @@ public class DebugOutput{
 		}
 	}
 	public static void printError(String message){
-		if(debug){
+//		if(debug){
 			System.err.println(message);
-		}
+//		}
 	}
 	public static String arrayToString(String[] array){
 		StringBuilder sb = new StringBuilder();

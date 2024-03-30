@@ -106,17 +106,17 @@ public class MenuThread extends Thread{
 		DebugOutput.clearOutput();
 		System.out.println("Please select what to do:");
 		System.out.println("1. Friend Menu");
-		System.out.println("2. Group Chat");
-		System.out.println("3. Logout");
+//		System.out.println("2. Group Chat");
+		System.out.println("2. Logout");
 		System.out.print("Input: ");
 		String input = InputUtils.getInput();
 		switch(Objects.requireNonNull(input)){
 			case "1" -> {
 				friendMenu();
 			}
-			case "2" -> {
-			}
-			case "3"-> {
+//			case "2" -> {
+//			}
+			case "2"-> {
 				connectionMessageHandler.sendEncryptedMessage(ConnectionMessageType.LOGOUT);
 				waitForResponse();
 				return;
