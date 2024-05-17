@@ -3,7 +3,6 @@ package willie.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
 
@@ -13,16 +12,16 @@ public class InputUtils{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		do{
 			try{
-				while(!br.ready()) {
+				while(!br.ready()){
 					sleep(100);
 				}
 				input = br.readLine();
-			}catch(IOException ignored) {
+			}catch(IOException ignored){
 				return null;
 			}catch(InterruptedException e){
 				throw new RuntimeException(e);
 			}
-		}while ("".equals(input));
+		}while("".equals(input));
 		return input;
 	}
 //	public static String getInput() {

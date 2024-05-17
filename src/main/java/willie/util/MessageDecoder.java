@@ -12,6 +12,7 @@ import java.util.List;
 public class MessageDecoder extends ByteToMessageDecoder{
 	int totalLength = 0;
 	boolean readingByteAmount = true;
+
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out){
 		if(readingByteAmount && in.readableBytes() < 4){
@@ -35,6 +36,7 @@ public class MessageDecoder extends ByteToMessageDecoder{
 		out.add(new ConnectionMessage(ConnectionMessageType.valueOf(type), messages));
 		totalLength = 0;
 	}
+
 	private String readString(ByteBuf in, int length){
 		byte[] bytes = new byte[length];
 		in.readBytes(bytes);

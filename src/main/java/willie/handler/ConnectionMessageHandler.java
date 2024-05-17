@@ -23,8 +23,9 @@ public class ConnectionMessageHandler extends ChannelInboundHandlerAdapter{
 	PublicKey serverPublicKey;
 	public Status status;
 	public MenuThread menuThread;
+
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) {
+	public void channelRead(ChannelHandlerContext ctx, Object msg){
 		if(!(msg instanceof ConnectionMessage message)){
 			return;
 		}
@@ -48,23 +49,23 @@ public class ConnectionMessageHandler extends ChannelInboundHandlerAdapter{
 				DebugOutput.printArray("Decrypted message: ", decryptMessages(message.messages));
 			}
 			case REGISTER -> {
-				String decrypted =  decryptMessages(message.messages)[0];
+				String decrypted = decryptMessages(message.messages)[0];
 				RegisterMessageHandler.handleRegisterMessage(decrypted, this);
 			}
 			case LOGIN -> {
-				String decrypted =  decryptMessages(message.messages)[0];
+				String decrypted = decryptMessages(message.messages)[0];
 				LoginMessageHandler.handleLoginMessage(decrypted, this);
 			}
 			case ADDFRIEND -> {
-				String decrypted =  decryptMessages(message.messages)[0];
+				String decrypted = decryptMessages(message.messages)[0];
 				FriendMessageHandler.handleAddFriendMessage(decrypted, this);
 			}
 			case FRIENDLIST -> {
-				String[] decrypted =  decryptMessages(message.messages);
+				String[] decrypted = decryptMessages(message.messages);
 				FriendMessageHandler.handleFriendListMessage(decrypted, this);
 			}
 			case FRIENDREQUEST -> {
-				String[] decrypted =  decryptMessages(message.messages);
+				String[] decrypted = decryptMessages(message.messages);
 				FriendMessageHandler.handleFriendRequestMessage(decrypted, this);
 			}
 			case LOGOUT -> {
@@ -73,40 +74,44 @@ public class ConnectionMessageHandler extends ChannelInboundHandlerAdapter{
 				menuThread.responseReceived = true;
 			}
 			case ACCEPTFRIEND -> {
-				String decrypted =  decryptMessages(message.messages)[0];
+				String decrypted = decryptMessages(message.messages)[0];
 				FriendMessageHandler.handleAcceptFriendMessage(decrypted, this);
 			}
 			case CHATWITHFRIEND -> {
-				String friend =  decryptMessages(message.messages)[0];
-				String chatMessage =  decryptMessages(message.messages)[1];
+				String friend = decryptMessages(message.messages)[0];
+				String chatMessage = decryptMessages(message.messages)[1];
 				FriendMessageHandler.handleChatWithFriendMessage(friend, chatMessage, this);
 			}
 			case CHATWITHFRIENDDEBUG -> {
-				String decrypted =  decryptMessages(message.messages)[0];
+				String decrypted = decryptMessages(message.messages)[0];
 				FriendMessageHandler.handleChatWithFriendDebugMessage(decrypted, this);
 			}
 			case FRIENDCHATHISTORY -> {
-				String[] decrypted =  decryptMessages(message.messages);
+				String[] decrypted = decryptMessages(message.messages);
 				FriendMessageHandler.handleFriendChatHistoryMessage(decrypted, this);
 			}
 		}
 	}
+
 	public void runMenuThread(){
 		menuThread = new MenuThread(this);
 		menuThread.start();
 	}
+
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
 		cause.printStackTrace();
 		ctx.close();
 	}
+
 	@Override
-	public void channelActive(final ChannelHandlerContext ctx) {
+	public void channelActive(final ChannelHandlerContext ctx){
 		this.serverCTX = ctx;
 		status = Status.CONNECTED;
 		MenuThread.menuStatus = null;
 		sendMessage(ConnectionMessageType.KEYEXCHANGE, Base64.getEncoder().encodeToString(KeyUtils.publicKey.getEncoded()));
 	}
+
 	public void sendMessage(ConnectionMessageType type, String... messages){
 		try{
 			serverCTX.writeAndFlush(new ConnectionMessage(type, messages));
@@ -114,6 +119,7 @@ public class ConnectionMessageHandler extends ChannelInboundHandlerAdapter{
 			e.printStackTrace();
 		}
 	}
+
 	public void sendEncryptedMessage(ConnectionMessageType type, String... messages){
 		try{
 			String[] encryptedMessages = new String[messages.length];
@@ -125,6 +131,7 @@ public class ConnectionMessageHandler extends ChannelInboundHandlerAdapter{
 			e.printStackTrace();
 		}
 	}
+
 	public String[] decryptMessages(String[] messages){
 		String[] decryptedMessages = new String[messages.length];
 		for(int i = 0; i < messages.length; i++){

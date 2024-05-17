@@ -17,21 +17,25 @@ public class ConnectionThead extends Thread{
 	String host;
 	int port;
 	Boolean stopped = false;
+
 	public ConnectionThead(String host, int port){
 		this.host = host;
 		this.port = port;
 	}
+
 	@Override
 	public void run(){
 		try{
 			connect();
 			sleep(3000);
-		}catch (Exception e) {
+		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
+
 	EventLoopGroup workerGroup = new NioEventLoopGroup();
 	public ConnectionMessageHandler connectionMessageHandler = new ConnectionMessageHandler();
+
 	public void connect() throws InterruptedException{
 		Bootstrap b = new Bootstrap();
 		b.group(workerGroup);
@@ -62,6 +66,7 @@ public class ConnectionThead extends Thread{
 			connect();
 		}
 	}
+
 	public void stopClient(){
 		stopped = true;
 		connectionMessageHandler.menuThread.interrupt();

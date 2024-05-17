@@ -15,10 +15,13 @@ import java.util.Set;
 public class MenuThread extends Thread{
 	ConnectionMessageHandler connectionMessageHandler;
 	public boolean responseReceived = false;
+
 	public MenuThread(ConnectionMessageHandler connectionMessageHandler){
 		this.connectionMessageHandler = connectionMessageHandler;
 	}
+
 	public static MenuStatus menuStatus;
+
 	@Override
 	public void run(){
 		while(!isInterrupted()){
@@ -44,6 +47,7 @@ public class MenuThread extends Thread{
 			}
 		}
 	}
+
 	public void startMenu(){
 		DebugOutput.clearOutput();
 		System.out.println("Please select what to do:");
@@ -68,6 +72,7 @@ public class MenuThread extends Thread{
 			}
 		}
 	}
+
 	public void loginMenu(){
 		DebugOutput.clearOutput();
 		System.out.println("Please enter your username and password to login.");
@@ -85,6 +90,7 @@ public class MenuThread extends Thread{
 		connectionMessageHandler.sendEncryptedMessage(ConnectionMessageType.LOGIN, account, password);
 		waitForResponse();
 	}
+
 	public void registerMenu(){
 		DebugOutput.clearOutput();
 		System.out.println("Please enter your username and password to register.");
@@ -102,6 +108,7 @@ public class MenuThread extends Thread{
 		connectionMessageHandler.sendEncryptedMessage(ConnectionMessageType.REGISTER, username, password);
 		waitForResponse();
 	}
+
 	public void mainMenu(){
 		DebugOutput.clearOutput();
 		System.out.println("Please select what to do:");
@@ -116,7 +123,7 @@ public class MenuThread extends Thread{
 			}
 //			case "2" -> {
 //			}
-			case "2"-> {
+			case "2" -> {
 				connectionMessageHandler.sendEncryptedMessage(ConnectionMessageType.LOGOUT);
 				waitForResponse();
 				return;
@@ -126,7 +133,9 @@ public class MenuThread extends Thread{
 			}
 		}
 	}
+
 	public Set<String> friends;
+
 	public void friendMenu(){
 		menuStatus = MenuStatus.FRIENDMENU;
 		DebugOutput.clearOutput();
@@ -167,6 +176,7 @@ public class MenuThread extends Thread{
 			}
 		}
 	}
+
 	public void addFriendMenu(){
 		DebugOutput.clearOutput();
 		System.out.println("Enter the username of the friend you want to add: ");
@@ -179,7 +189,9 @@ public class MenuThread extends Thread{
 		connectionMessageHandler.sendEncryptedMessage(ConnectionMessageType.ADDFRIEND, friend);
 		waitForResponse();
 	}
+
 	public Set<String> friendRequests;
+
 	public void viewFriendRequestsMenu(){
 		DebugOutput.clearOutput();
 		friendRequests = new HashSet<>();
@@ -230,7 +242,9 @@ public class MenuThread extends Thread{
 			viewFriendRequestsMenu();
 		}
 	}
+
 	public String[] chatHistory;
+
 	public void chatWithFriendMenu(){
 		menuStatus = MenuStatus.CHATWITHFRIEND;
 		DebugOutput.clearOutput();
@@ -269,6 +283,7 @@ public class MenuThread extends Thread{
 			chatWithFriendMenu();
 		}
 	}
+
 	public void waitForResponse(){
 		responseReceived = false;
 		while(!responseReceived){
